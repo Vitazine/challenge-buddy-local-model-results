@@ -1,0 +1,17 @@
+{
+  "command": [
+    "./scripts/pnpm.sh",
+    "exec",
+    "node",
+    "--import",
+    "tsx",
+    "--test",
+    "<BENCHMARK_ROOT>/local-bug/test-results/current/verification/baseline-repro-diagnostic/tests/day04-defect-reproduction.test.ts",
+    "<BENCHMARK_ROOT>/local-bug/test-results/current/verification/baseline-repro-diagnostic/tests/domain.test.ts"
+  ],
+  "startedUTC": "2026-10-25T07:30:50.917113+00:00",
+  "elapsedSeconds": 0.559485375,
+  "exitCode": 1,
+  "method": "Final local tests copied into ignored fixture against untouched FrozenHEAD server/shared plus original tests/helpers. First diagnostic lacked helpers; its failure log retained. No product edits.",
+  "fixture": "<BENCHMARK_ROOT>/local-bug/test-results/current/verification/baseline-repro-diagnostic"
+}

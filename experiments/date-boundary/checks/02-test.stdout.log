@@ -1,0 +1,40 @@
+✔ API: create → mark → reload → undo; other users cannot read or change data (130.302375ms)
+✔ API rejects missing credentials, bad data and oversized payloads (6.536083ms)
+✔ development identity fails closed in production and for cross-origin requests (3.944833ms)
+✔ archive API: ownership, retry, history, both mark methods and list isolation (137.039834ms)
+✔ archive pagination filters items and total identically; statuses stay calendar based (8.024083ms)
+✔ new file becomes v2; archived history survives repeated v2 reopen (5.622625ms)
+✔ v1 migration preserves records, marks and existing indexes (5.6605ms)
+✔ unsupported future schema is rejected without DDL, version or data changes (2.325292ms)
+✔ accepts signed Telegram identity (3.832375ms)
+✔ rejects tampering, bad token, malformed hash and duplicate fields (1.18625ms)
+✔ rejects expired, future and invalid identity (1.457833ms)
+✖ дефект: сервер принимает startDate за пределами +7 дней (17.620042ms)
+✔ calendar arithmetic and time zones cross boundaries without DST drift (17.904875ms)
+✔ input rejects impossible dates, blank titles, fractional durations and unknown fields (3.344708ms)
+✔ last day is inclusive, marks are idempotent, owner is enforced, data survives reopening (5.597458ms)
+✔ future challenge cannot be checked in (0.49725ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 15
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 487.200667
+
+✖ failing tests:
+
+test at tests/day04-defect-reproduction.test.ts:7:1
+✖ дефект: сервер принимает startDate за пределами +7 дней (17.620042ms)
+  TypeError [ERR_INVALID_RETURN_VALUE]: Expected instance of Promise to be returned from the "promiseFn" function but got an instance of Object.
+      at waitForActual (node:assert:635:13)
+      at strict.rejects (node:assert:769:31)
+      at TestContext.<anonymous> (<BENCHMARK_ROOT>/local-bug/tests/day04-defect-reproduction.test.ts:22:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    code: 'ERR_INVALID_RETURN_VALUE'
+  }
+[ELIFECYCLE] Test failed. See above for more details.

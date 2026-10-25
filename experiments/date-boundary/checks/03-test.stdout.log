@@ -1,0 +1,24 @@
+✔ API: create → mark → reload → undo; other users cannot read or change data (113.009542ms)
+✔ API rejects missing credentials, bad data and oversized payloads (6.295917ms)
+✔ development identity fails closed in production and for cross-origin requests (3.4365ms)
+✔ archive API: ownership, retry, history, both mark methods and list isolation (119.93275ms)
+✔ archive pagination filters items and total identically; statuses stay calendar based (7.528ms)
+✔ new file becomes v2; archived history survives repeated v2 reopen (5.479666ms)
+✔ v1 migration preserves records, marks and existing indexes (4.443208ms)
+✔ unsupported future schema is rejected without DDL, version or data changes (2.120125ms)
+✔ accepts signed Telegram identity (3.344042ms)
+✔ rejects tampering, bad token, malformed hash and duplicate fields (0.58525ms)
+✔ rejects expired, future and invalid identity (0.652875ms)
+✔ дефект: сервер принимает startDate за пределами +7 дней (17.876625ms)
+✔ calendar arithmetic and time zones cross boundaries without DST drift (14.934666ms)
+✔ input rejects impossible dates, blank titles, fractional durations and unknown fields (2.41425ms)
+✔ last day is inclusive, marks are idempotent, owner is enforced, data survives reopening (4.99325ms)
+✔ future challenge cannot be checked in (0.438417ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 416.842083

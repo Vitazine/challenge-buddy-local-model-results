@@ -1,0 +1,14 @@
+{
+  "command": [
+    "./scripts/pnpm.sh",
+    "check"
+  ],
+  "cwd": "<BENCHMARK_ROOT>/local-research",
+  "phase": "check",
+  "startedUTC": "2026-10-25T07:32:59.030822+00:00",
+  "elapsedSeconds": 7.74783825,
+  "exitCode": 0,
+  "candidate": null,
+  "sourceDigest": "d43cd7f47d5adefc2db1661d4c62f82352e6c0f33051f7c95c3a913038098562",
+  "productChanged": false
+}

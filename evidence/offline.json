@@ -1,0 +1,38 @@
+{
+  "scope": "Client, separate Ollama server and its inference children share Seatbelt deny-external-IP policy; host networking unchanged",
+  "requests": [
+    {
+      "name": "chat",
+      "elapsedSeconds": 7.748,
+      "text": "{\"ok\":true,\"answer\":4}",
+      "done": true,
+      "evalCount": 10,
+      "evalDuration": 503155000,
+      "promptEvalCount": 35,
+      "promptEvalDuration": 599666000,
+      "syntheticAcceptance": true
+    },
+    {
+      "name": "autocomplete",
+      "elapsedSeconds": 5.567,
+      "text": "return a + b;",
+      "done": true,
+      "evalCount": 6,
+      "evalDuration": 59112000,
+      "promptEvalCount": 19,
+      "promptEvalDuration": 131833000,
+      "syntheticAcceptance": true
+    }
+  ],
+  "externalControl": {
+    "blocked": true,
+    "errno": 1,
+    "error": "[Errno 1] Operation not permitted"
+  },
+  "version": {
+    "version": "0.40.11"
+  },
+  "serverExitCode": 0,
+  "startedUTC": "2026-10-25T07:33:44.407563+00:00",
+  "endedUTC": "2026-10-25T07:34:06.026558+00:00"
+}

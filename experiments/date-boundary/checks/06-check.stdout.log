@@ -1,0 +1,47 @@
+✔ API: create → mark → reload → undo; other users cannot read or change data (144.049833ms)
+✔ API rejects missing credentials, bad data and oversized payloads (10.878791ms)
+✔ development identity fails closed in production and for cross-origin requests (5.831375ms)
+✔ archive API: ownership, retry, history, both mark methods and list isolation (156.692416ms)
+✔ archive pagination filters items and total identically; statuses stay calendar based (12.509958ms)
+✔ new file becomes v2; archived history survives repeated v2 reopen (7.077709ms)
+✔ v1 migration preserves records, marks and existing indexes (5.160959ms)
+✔ unsupported future schema is rejected without DDL, version or data changes (3.140208ms)
+✔ accepts signed Telegram identity (3.420208ms)
+✔ rejects tampering, bad token, malformed hash and duplicate fields (1.31425ms)
+✔ rejects expired, future and invalid identity (1.415334ms)
+✔ дефект: сервер принимает startDate за пределами +7 дней (20.756292ms)
+✔ calendar arithmetic and time zones cross boundaries without DST drift (18.771083ms)
+✔ input rejects impossible dates, blank titles, fractional durations and unknown fields (3.659458ms)
+✔ last day is inclusive, marks are idempotent, owner is enforced, data survives reopening (10.322ms)
+✔ future challenge cannot be checked in (0.559917ms)
+✖ startDate validation: today + 7 is allowed (inclusive boundary) (0.505458ms)
+✔ startDate validation: today + 8 is rejected (outside boundary) (0.907417ms)
+✔ startDate validation: different time zones use their own local date (1.157209ms)
+✔ startDate validation: past dates still allowed (existing policy unchanged) (0.782666ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 19
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 611.298542
+
+✖ failing tests:
+
+test at tests/domain.test.ts:84:1
+✖ startDate validation: today + 7 is allowed (inclusive boundary) (0.505458ms)
+  Error: Дата старта (2026-11-01) должна быть не позже 2026-10-31.
+      at ChallengeService.create (<BENCHMARK_ROOT>/local-bug/server/challenges.ts:51:13)
+      at TestContext.<anonymous> (<BENCHMARK_ROOT>/local-bug/tests/domain.test.ts:90:29)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    statusCode: 422,
+    code: 'INVALID_START_DATE'
+  }
+[ELIFECYCLE] Test failed. See above for more details.
+[ELIFECYCLE] Command failed with exit code 1.

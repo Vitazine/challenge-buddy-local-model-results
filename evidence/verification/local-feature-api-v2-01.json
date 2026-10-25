@@ -1,0 +1,18 @@
+{
+  "command": [
+    "./scripts/pnpm.sh",
+    "exec",
+    "node",
+    "--import",
+    "tsx",
+    "<BENCHMARK_ROOT>/test-results/current/verification/verifier.mjs",
+    "<BENCHMARK_ROOT>/local-feature",
+    "feature"
+  ],
+  "cwd": "<BENCHMARK_ROOT>/local-feature",
+  "startedUTC": "2026-10-25T07:13:42.840824+00:00",
+  "elapsedSeconds": 1.50526125,
+  "exitCode": 1,
+  "verifierRevision": 2,
+  "verifierSHA256": "032e65ba99ae9759225b4e2cf73e336509c7b0a0d35e7bfeca26e7be193b1c09"
+}

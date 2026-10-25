@@ -1,0 +1,41 @@
+[
+  {
+    "model": "challenge-buddy-agent:32k",
+    "parameters": "num_ctx                        32768\nnum_predict                    4096\npresence_penalty               1.5\ntemperature                    1\ntop_k                          20\ntop_p                          0.95",
+    "details": {
+      "parent_model": "qwen3.5:9b-q4_K_M",
+      "format": "gguf",
+      "family": "qwen35",
+      "families": [
+        "qwen35"
+      ],
+      "parameter_size": "9.0B",
+      "quantization_level": "Q4_K_M",
+      "runner": "llamacpp"
+    },
+    "capabilities": [
+      "completion",
+      "vision",
+      "tools",
+      "thinking"
+    ]
+  },
+  {
+    "model": "qwen2.5-coder:1.5b-base",
+    "parameters": null,
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "qwen2",
+      "families": [
+        "qwen2"
+      ],
+      "parameter_size": "1.5B",
+      "quantization_level": "Q4_K_M"
+    },
+    "capabilities": [
+      "completion",
+      "insert"
+    ]
+  }
+]

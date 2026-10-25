@@ -1,0 +1,7 @@
+{
+  "utc": "2026-10-25T07:12:37.872936+00:00",
+  "revision": 2,
+  "change": "Bug validation asserts shared ApiError string code+message format, not a single chosen implementation code VALIDATION_ERROR",
+  "reason": "Original shared/contracts.ts ApiError allows code:string; task does not prescribe a new error code. No existing client branch depends on a specific code. HTTP422, +7/+8, timezone, noINSERT, duration and past-date criteria unchanged.",
+  "fairness": "Both frozen cloud copies will be rerun using same revised script before local bug acceptance. All old logs retained. No generated code modified."
+}

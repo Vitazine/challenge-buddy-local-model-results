@@ -1,0 +1,17 @@
+{
+  "command": [
+    "./scripts/pnpm.sh",
+    "exec",
+    "node",
+    "--import",
+    "tsx",
+    "<BENCHMARK_ROOT>/test-results/current/verification/verifier.mjs",
+    "<BENCHMARK_ROOT>/local-bug",
+    "bug"
+  ],
+  "cwd": "<BENCHMARK_ROOT>/local-bug",
+  "startedUTC": "2026-10-25T07:27:14.348329+00:00",
+  "elapsedSeconds": 0.598168292,
+  "exitCode": 0,
+  "verifierRevision": 2
+}

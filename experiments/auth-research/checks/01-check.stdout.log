@@ -1,0 +1,32 @@
+✔ API: create → mark → reload → undo; other users cannot read or change data (83.131334ms)
+✔ API rejects missing credentials, bad data and oversized payloads (5.852083ms)
+✔ development identity fails closed in production and for cross-origin requests (2.272459ms)
+✔ archive API: ownership, retry, history, both mark methods and list isolation (88.371084ms)
+✔ archive pagination filters items and total identically; statuses stay calendar based (4.792375ms)
+✔ new file becomes v2; archived history survives repeated v2 reopen (3.318834ms)
+✔ v1 migration preserves records, marks and existing indexes (3.425292ms)
+✔ unsupported future schema is rejected without DDL, version or data changes (1.3775ms)
+✔ accepts signed Telegram identity (1.250291ms)
+✔ rejects tampering, bad token, malformed hash and duplicate fields (0.317708ms)
+✔ rejects expired, future and invalid identity (0.423833ms)
+✔ calendar arithmetic and time zones cross boundaries without DST drift (10.62875ms)
+✔ input rejects impossible dates, blank titles, fractional durations and unknown fields (2.0395ms)
+✔ last day is inclusive, marks are idempotent, owner is enforced, data survives reopening (3.479334ms)
+✔ future challenge cannot be checked in (0.365ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 590.429458
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 134 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.86 kB │ gzip:   0.51 kB
+dist/assets/index-qm4ZnKo3.css   11.29 kB │ gzip:   3.14 kB
+dist/assets/index-Dt5rS5wR.js   327.38 kB │ gzip: 101.10 kB
+✓ built in 505ms

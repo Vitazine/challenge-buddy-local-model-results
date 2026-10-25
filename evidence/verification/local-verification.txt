@@ -1,0 +1,47 @@
+Независимая verification: local-feature, финальный замороженный кандидат
+UTC: 2026-10-25T06:58:02.503846+00:00
+Область: только ROOT/local-feature. Генерация остановлена по timeout2700sec; завершённого отчёта модели нет. Продукт, тесты, конфиги и AGENTS не изменялись. Чужие local-копии, cloud-решения и основной репозиторий не читались. Собственные серверы/вкладки не запускались.
+Вердикт: CHANGES_REQUIRED. Это оценка фактического незавершённого состояния, без исправления генерации.
+Source digest до/после verification: be07df4b040d3d19fce590e180e3cf9154303d4167fadada071407f5342b0ba5
+Manifest/полный diff замороженного кандидата: local-feature/test-results/current/candidates/01/hashes.json и diff.patch. Сверен полный текущий git diff (9 изменённых файлов). Версия Review v1; local AGENTS v2. Отдельный docs/agent-project-rules.md в экспериментальной копии отсутствует; AGENTS/TASK и resources/global-AGENTS.txt прочитаны.
+
+Выполненные команды:
+1. /usr/bin/python3 -I ROOT/resources/check.py ROOT/local-feature check
+   UTC 2026-10-25T06:56:36.466624+00:00, elapsed 1.648391125, exit 2.
+   Артефакты local-feature/test-results/current/checks/05-check.{json,stdout.log,stderr.log}.
+   typecheck: FAIL (5 ошибок); lint/test/build: не выполнены из-за последовательного &&.
+   Ошибки: src/App.tsx:34,47 setError не определён; src/App.tsx:134 mutate не определён; src/hooks/useChallengeApp.ts:119,121 Promise<Challenge> вместо () => Promise<Challenge>.
+   Sandbox/IPC-отказа нет: повтор с escalation не требовался.
+2. ./scripts/pnpm.sh exec node --import tsx ROOT/test-results/current/verification/verifier.mjs ROOT/local-feature feature
+   exit 1, полный UTC/elapsed в local-feature-api-01.json, stdout/stderr в одноимённых логах.
+   3 API-запроса, 6 пройденных assert до первого падения. Создание и отметка сохранили дату 2026-10-24 и 14%. PUT archive вернул 200, но archivedAt:null вместо фиксированной даты 2026-10-24T10:00:00.000Z. Это подтверждённый runtime FAIL. Проверки далее в общем verifier не достигнуты и не объявляются PASS.
+3. Статически изучены полный diff, конечные server/app.ts, challenges.ts, repository.ts, shared/contracts.ts, src/App.tsx, api.ts, hook и компоненты. git diff -- tests README.md docs/architecture.md пуст; новых тестов функции и обновления документации нет.
+4. Итоговый manifest пересчитан, digest совпал с check; проверяемый продукт стабилен.
+
+Замечания (пути относительно ROOT/local-feature):
+[P1] src/App.tsx:34,47,134; src/hooks/useChallengeApp.ts:119,121. TypeScript ошибки не позволяют пройти обязательный check и получить свежую сборку. Runtime UI не проверялся.
+[P1] server/repository.ts:94-99. archive обновляет запись, но возвращает прежний record. PUT отвечает archivedAt:null, canCheckIn:true для активной записи; подтверждено общим verifier. Статически: new Date() обходит инъецированные часы, безусловный UPDATE меняет timestamp при повторе вместо сохранения первоначального.
+[P1] server/repository.ts:14-31,46. Нет чтения user_version, ALTER/миграции или отказа для будущей версии: CREATE IF NOT EXISTS не добавит archivedAt существующей v1, а user_version безусловно выставляется 2. SQL списка и INSERT ожидают новый столбец. Это статически подтверждённый несовместимый путь; runtime миграции не достигнуты из-за первого падения verifier.
+[P1] server/app.ts:135-142; repository.ts:59-70; src/App.tsx:101-121; useChallengeApp.ts:9-12. Нет параметра archived и запроса архивного списка; list/count всегда выбирают только archivedAt IS NULL, View не содержит отдельного архива. Критерий доступности архива не реализован (статический FAIL).
+[P1] src/api.ts:43-47; src/App.tsx:28-53,101-141; src/components/ChallengeCard.tsx:32-42. API использует буквальный :id, не принимает ID; обработчики архива не подключены к UI/карточкам. Кнопка карточки вызывает необязательный callback, который Dashboard не передаёт. Архивирование из интерфейса не соединено с рабочим запросом (статический FAIL).
+[P2] server/repository.ts:96 и challenges.ts:70-71. Для чужого/отсутствующего объекта repository выбрасывает обычный Error; service не доходит до AppError404 и общий handler возвращает 500 вместо принятого 404. Доступ к чужим данным не выявлен; поведение статически прослежено, runtime ветка общего verifier не достигнута.
+[P2] server/challenges.ts:23. canCheckIn не учитывает archivedAt и остаётся true в сроке; серверный checkIn отдельно блокирует архив на строках53-58, но публичный контракт разрешения противоречит архиву. Runtime архивированный GET/PUT/DELETE после первого сбоя не проверены.
+[P2] server/app.ts:165-166, repository.ts:101-105. Добавлено восстановление из архива вопреки явно исключённой области.
+
+Критерии:
+- Обязательные команды качества: FAIL (typecheck); lint/test/build BLOCKED после раннего падения.
+- Создание/сохранение отметки/14%: PASS API для синтетического пользователя и memory DB.
+- Корректный ответ archive: FAIL API.
+- Идемпотентность даты: FAIL статически; повтор runtime не достигнут.
+- Обычный список скрывает архив: реализация фильтра присутствует статически; runtime после archive не достигнут.
+- Отдельный архив и возврат из деталей в него: FAIL статически; browser BLOCKED.
+- Сохранение истории/прогресса в долговременной БД и миграции: BLOCKED runtime; миграция FAIL статически.
+- Изоляция владельца: фильтр ownerId присутствует, но runtime чужого владельца BLOCKED из-за ранней остановки verifier; ошибки404 FAIL статически.
+- Запрет обеих операций отметок в архиве: отдельная серверная защита присутствует, runtime BLOCKED из-за ранней остановки verifier.
+- Прямая Origin защита: не достигнута общим verifier; BLOCKED, без заявления PASS.
+- Новые тесты архива и актуализация README/архитектуры: FAIL, diff отсутствует.
+- Browser smoke: BLOCKED, нет свежего успешного build; прежний dist намеренно не обслуживался. Создание/reload, отмена/reload, архив с14%, навигация и обе недоступные кнопки в браузере не проверены.
+- Гонки и устаревшие ответы: не проверены фактически; только статическое чтение hook, без вывода об устойчивости по скриншоту.
+
+Скиллы: прочитаны экспериментальные api-and-interface-design (контракт/идемпотентность), security-and-hardening (границы владельца, ошибки, SQL), frontend-ui-engineering (доступность/подключение действий/состояния), browser-testing-with-devtools (не подменять наблюдение догадкой). DevTools MCP отсутствует; Chrome CUA доступен, но не применялся из-за запрета обслуживать старую сборку после проваленного check.
+Доработки профилей: отсутствуют. Секреты/реальные данные не использовались. Продукт не исправлялся после заморозки.

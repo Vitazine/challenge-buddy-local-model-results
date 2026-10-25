@@ -1,0 +1,10 @@
+{"request":1,"method":"POST","url":"/api/challenges","status":201,"body":{"title":"Синтетическая независимая проверка","startDate":"2026-10-24","duration":7,"timeZone":"Asia/Manila","id":"9305b928-68f6-4464-ac37-e34989d68fa5","createdAt":"2026-10-24T10:00:00.000Z","archivedAt":null,"endDate":"2026-10-30","today":"2026-10-24","checkIns":[],"progress":0,"canCheckIn":true,"status":"active"}}
+{"assertion":"create","expected":201,"actual":201,"result":"PASS"}
+{"assertion":"new archive nullable","expected":null,"actual":null,"result":"PASS"}
+{"request":2,"method":"PUT","url":"/api/challenges/9305b928-68f6-4464-ac37-e34989d68fa5/check-ins/today","status":200,"body":{"id":"9305b928-68f6-4464-ac37-e34989d68fa5","title":"Синтетическая независимая проверка","startDate":"2026-10-24","duration":7,"timeZone":"Asia/Manila","createdAt":"2026-10-24T10:00:00.000Z","archivedAt":null,"endDate":"2026-10-30","today":"2026-10-24","checkIns":["2026-10-24"],"progress":14,"canCheckIn":true,"status":"active"}}
+{"assertion":"mark","expected":200,"actual":200,"result":"PASS"}
+{"assertion":"mark persisted","expected":["2026-10-24"],"actual":["2026-10-24"],"result":"PASS"}
+{"assertion":"progress","expected":14,"actual":14,"result":"PASS"}
+{"request":3,"method":"PUT","url":"/api/challenges/9305b928-68f6-4464-ac37-e34989d68fa5/archive","status":200,"body":{"id":"9305b928-68f6-4464-ac37-e34989d68fa5","title":"Синтетическая независимая проверка","startDate":"2026-10-24","duration":7,"timeZone":"Asia/Manila","createdAt":"2026-10-24T10:00:00.000Z","archivedAt":null,"endDate":"2026-10-30","today":"2026-10-24","checkIns":["2026-10-24"],"progress":14,"canCheckIn":true,"status":"active"}}
+{"assertion":"archive","expected":200,"actual":200,"result":"PASS"}
+{"kind":"feature","copy":"<BENCHMARK_ROOT>/local-feature","result":"FAIL","checks":6,"calls":3}

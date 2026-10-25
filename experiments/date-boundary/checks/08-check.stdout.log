@@ -1,0 +1,3 @@
+tests/api-startdate-validation.test.ts(25,33): error TS2339: Property 'statusCode' does not exist on type 'Error'.
+[ELIFECYCLE] Command failed with exit code 2.
+[ELIFECYCLE] Command failed with exit code 2.

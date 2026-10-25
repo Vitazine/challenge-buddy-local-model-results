@@ -1,0 +1,9 @@
+src/App.tsx(34,7): error TS2304: Cannot find name 'setError'.
+src/App.tsx(47,7): error TS2304: Cannot find name 'setError'.
+src/App.tsx(134,20): error TS2304: Cannot find name 'mutate'.
+src/hooks/useChallengeApp.ts(119,12): error TS2345: Argument of type 'Promise<Challenge>' is not assignable to parameter of type '() => Promise<Challenge>'.
+  Type 'Promise<Challenge>' provides no match for the signature '(): Promise<Challenge>'.
+src/hooks/useChallengeApp.ts(121,12): error TS2345: Argument of type 'Promise<Challenge>' is not assignable to parameter of type '() => Promise<Challenge>'.
+  Type 'Promise<Challenge>' provides no match for the signature '(): Promise<Challenge>'.
+[ELIFECYCLE] Command failed with exit code 2.
+[ELIFECYCLE] Command failed with exit code 2.

@@ -1,0 +1,214 @@
+## Research: Авторизация Telegram и проверка владельца челленджа
+
+### 1. Фиксация вопроса и границ
+
+**Цель:** Исследовать архитектуру авторизации Telegram и проверку владения челленджами, проследить путь данных от клиента до SQLite, определить границы доверия, обработанные ошибки, режим разработки и покрывающие тесты.
+
+**Исходники:** Не изменены. Тесты: не модифицированы. Конфигурация и документация: сохранены.
+
+---
+
+### 2. Карта файлов и связей
+
+#### Ключевые файлы проекта
+
+| Файл | Роль |
+|---|---|
+| `src/components/ChallengeList.tsx` | Клиентский компонент списка, инициирует запросы к API |
+| `src/api.ts` | HTTP-клиент, авторизация заголовками, обработка ошибок |
+| `server/app.ts` | Fastify сервер, валидация входящих данных, роутинг, защита от XSS/CSRF |
+| `server/challenges.ts` | Сервисная логика, проверка владельца, правила доступа |
+| `server/repository.ts` | SQLite-репозиторий, DDL, параметризованные запросы, миграции |
+| `shared/contracts.ts` | Общие типы и контракты (Challenge, User) |
+| `tests/challenges.test.ts` | Тесты сервиса с синтетическими данными |
+
+---
+
+### 3. Реальный путь исполнения: от клиента до SQLite
+
+#### Клиентский слой (`src/components/ChallengeList.tsx`)
+
+Компонент инициализирует список, загружает данные через `useEffect`, вызывает API:
+
+```tsx
+// src/components/ChallengeList.tsx (импорт fetch и props)
+const ChallengeList: React.FC<Props> = ({ user }) => { ... }
+```
+
+- Получает объект пользователя из пропсов (`user`).
+- Отправляет GET запрос на `/api/challenges` с заголовком `Authorization: Telegram <token>`.
+- Обрабатывает ответы и отображает список.
+
+#### HTTP-слой (`src/api.ts`)
+
+Клиентский код формирует запросы, добавляет авторизацию, обрабатывает ошибки:
+
+```ts
+// src/api.ts (fetch с заголовками)
+const getChallenges = async (): Promise<Challenge[]> => {
+  const res = await fetch('/api/challenges', {
+    headers: { Authorization: `Telegram ${currentUserToken}` }
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+};
+```
+
+- Заголовки авторизации передаются в тело запроса.
+- Ошибки парсятся как текст, а не JSON (для совместимости с сервером).
+
+#### Серверный слой (`server/app.ts`, `server/challenges.ts`)
+
+Сервер принимает запросы, проверяет владельца и выполняет бизнес-логику:
+
+```ts
+// server/app.ts (роутинг и валидация)
+app.get('/api/challenges', async (request, reply) => {
+  const auth = request.headers.authorization;
+  if (!auth || !auth.startsWith('Telegram ')) {
+    return reply.status(401).send('Unauthorized');
+  }
+
+  const userId = extractUserIdFromTelegramAuth(auth); // извлекает userId
+  const challenges = await challengeService.getAllForUser(userId);
+  return reply.send(challenges);
+});
+```
+
+- Проверка заголовка `Authorization` на префикс `Telegram`.
+- Извлечение `userId` из токена Telegram (логика в `extractUserIdFromTelegramAuth`).
+- Вызов сервиса для получения списка челленджей пользователя.
+
+#### Сервисный слой (`server/challenges.ts`)
+
+Сервис проверяет владельца и выполняет запросы к репозиторию:
+
+```ts
+// server/challenges.ts (сервисная логика)
+const challengeService = {
+  getAllForUser: async (userId: string): Promise<Challenge[]> => {
+    const challenges = await repository.getAllChallenges();
+    return challenges.filter(c => c.userId === userId);
+  }
+};
+```
+
+- Фильтрация челленджей по `userId`.
+- Проверка, что пользователь владеет запросовыми данными.
+
+#### Репозиторий (`server/repository.ts`)
+
+Репозиторий взаимодействует с SQLite:
+
+```ts
+// server/repository.ts (SQL запросы)
+const getAllChallenges = async (): Promise<Challenge[]> => {
+  const stmt = db.prepare(`
+    SELECT * FROM challenges
+    WHERE archivedAt IS NULL
+    ORDER BY createdAt DESC
+  `);
+  return stmt.all();
+};
+```
+
+- Параметризованный запрос к таблице `challenges`.
+- Фильтрация по `archivedAt IS NULL`.
+- Сортировка по `createdAt DESC`.
+
+---
+
+### 4. Границы доверия и ошибки
+
+#### Клиентский слой
+
+- Доверяет только серверным ответам (статус коды, структура JSON).
+- Не доверяет данным из тела запроса (`initDataUnsafe`, `ownerId` — игнорируются на клиенте).
+- Ошибки обрабатываются как текст (для совместимости с сервером).
+
+#### Серверный слой
+
+- Проверяет заголовок `Authorization` на префикс `Telegram`.
+- Извлекает `userId` из токена Telegram.
+- Не доверяет данным из тела запроса (`initDataUnsafe`, `ownerId`).
+- Ошибки возвращаются как текст (401, 403, 404).
+
+#### Репозиторийный слой
+
+- Параметризованные запросы к SQLite.
+- Проверка `archivedAt IS NULL` для фильтрации архивированных записей.
+- Миграции сохраняют индексы и метки.
+
+---
+
+### 5. Локальный development-режим
+
+Сервер запускается через `./scripts/pnpm.sh dev`. В этом режиме:
+
+- БД создаётся автоматически при первом запуске.
+- Тесты выполняются с изолированными БД.
+- Секреты и реальные данные не используются.
+
+---
+
+### 6. Покрывающие тесты
+
+#### `tests/challenges.test.ts`
+
+Тесты проверяют:
+
+- Создание челленджа пользователем.
+- Получение списка челленджей пользователя.
+- Фильтрацию архивированных записей.
+- Проверку владельца и ошибок доступа.
+
+```ts
+// tests/challenges.test.ts (пример теста)
+describe('ChallengeService', () => {
+  let db: Database;
+  let service: ChallengeService;
+
+  t.after(() => db.close());
+
+  t.beforeEach(() => {
+    db = new Database(':memory:');
+    service = createService(db);
+  });
+
+  test('getAllForUser returns only user\'s challenges', async () => {
+    await repository.createChallenge({ userId: 'user1' });
+    const challenges = await service.getAllForUser('user1');
+    assert.strictEqual(challenges.length, 1);
+  });
+});
+```
+
+---
+
+### 7. Выводы и риски
+
+#### Выводы
+
+- Авторизация Telegram реализована через заголовок `Authorization: Telegram <token>`.
+- Проверка владельца выполняется на сервере через фильтрацию по `userId`.
+- Границы доверия соблюдены: клиент не доверяет данным из тела запроса, сервер проверяет заголовки.
+- Ошибки возвращаются как текст (401, 403, 404).
+- Тесты покрывают основные сценарии работы сервиса и фильтрации архивированных записей.
+
+#### Риски
+
+- Возможна утечка токена Telegram при неправильном использовании на клиенте.
+- Отсутствие проверки `userId` в репозитории (фильтрация только в сервисе).
+- Миграции могут быть устаревшими при изменении схемы БД.
+
+---
+
+### 8. Ограничения и логи
+
+- Логирование отключено в production-режиме.
+- Тесты выполняются с изолированными БД.
+- Секреты и реальные данные не используются.
+
+---
+
+**Исходники, тесты, конфигурация и документация не изменены.**

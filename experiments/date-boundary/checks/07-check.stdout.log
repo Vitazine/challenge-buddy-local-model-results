@@ -1,0 +1,37 @@
+✔ API: create → mark → reload → undo; other users cannot read or change data (152.1935ms)
+✔ API rejects missing credentials, bad data and oversized payloads (9.582167ms)
+✔ development identity fails closed in production and for cross-origin requests (6.003958ms)
+✔ archive API: ownership, retry, history, both mark methods and list isolation (165.357125ms)
+✔ archive pagination filters items and total identically; statuses stay calendar based (13.241333ms)
+✔ new file becomes v2; archived history survives repeated v2 reopen (8.12775ms)
+✔ v1 migration preserves records, marks and existing indexes (6.146083ms)
+✔ unsupported future schema is rejected without DDL, version or data changes (2.858584ms)
+✔ accepts signed Telegram identity (4.093042ms)
+✔ rejects tampering, bad token, malformed hash and duplicate fields (0.935875ms)
+✔ rejects expired, future and invalid identity (1.270125ms)
+✔ дефект: сервер принимает startDate за пределами +7 дней (44.5055ms)
+✔ calendar arithmetic and time zones cross boundaries without DST drift (19.803875ms)
+✔ input rejects impossible dates, blank titles, fractional durations and unknown fields (4.079167ms)
+✔ last day is inclusive, marks are idempotent, owner is enforced, data survives reopening (10.654334ms)
+✔ future challenge cannot be checked in (0.639666ms)
+✔ startDate validation: today + 7 is allowed (inclusive boundary) (0.633792ms)
+✔ startDate validation: today + 8 is rejected (outside boundary) (0.677125ms)
+✔ startDate validation: different time zones use their own local date (0.58525ms)
+✔ startDate validation: past dates still allowed (existing policy unchanged) (0.443ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 588.0315
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 134 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.86 kB │ gzip:   0.51 kB
+dist/assets/index-qm4ZnKo3.css   11.29 kB │ gzip:   3.14 kB
+dist/assets/index-DZTA0w7R.js   327.62 kB │ gzip: 101.24 kB
+✓ built in 1.05s

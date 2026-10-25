@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-25",
+  "sourceProject": "https://github.com/Vitazine/challenge-buddy",
+  "hardware": {
+    "model": "MacBook Air",
+    "chip": "Apple M4",
+    "cpuCores": 10,
+    "gpuCores": 10,
+    "unifiedMemoryGB": 24,
+    "macOS": "26.6.2"
+  },
+  "agentSettings": {
+    "model": "challenge-buddy-agent:32k",
+    "baseModel": "qwen3.5:9b-q4_K_M",
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "reasoning_effort": "none",
+    "context": 32768
+  },
+  "localTasks": {
+    "feature": {
+      "directory": "experiments/archive",
+      "base": "a0e36e85c03f439cf59e8c6e568f1b4306d2a3ab",
+      "profile": "Day 1 rules v2",
+      "promptSha256": "3e220f1e99caf03c6f701f039b556a2696cc06002cfc39ecae61c1b43fc6d788",
+      "status": "timeout",
+      "elapsedSeconds": 2700.003,
+      "steps": 31,
+      "contextDrops": 11,
+      "humanGuidance": 0,
+      "codeReads": 11,
+      "skillsRead": [],
+      "toolErrorCount": 7,
+      "singleOriginalUserPrompt": true,
+      "stableSystem": true
+    },
+    "bug": {
+      "directory": "experiments/date-boundary",
+      "base": "94274ba",
+      "profile": "Bug Fix v1",
+      "promptSha256": "7572b0608a3d36a25ce8d1cc8dfd6f10ca090ffe94ce9a65d3d81c5cc19536ae",
+      "status": "timeout",
+      "elapsedSeconds": 1830.78,
+      "steps": 29,
+      "contextDrops": 1,
+      "humanGuidance": 0,
+      "codeReads": 9,
+      "skillsRead": [],
+      "toolErrorCount": 1,
+      "singleOriginalUserPrompt": true,
+      "stableSystem": true
+    },
+    "research": {
+      "directory": "experiments/auth-research",
+      "base": "94274ba",
+      "profile": "Research v1",
+      "promptSha256": "03b76b07a77524d1a40174cd6c92210316af30d152142fd55c4ee72a406f7af6",
+      "status": "completed",
+      "elapsedSeconds": 279.488,
+      "steps": 1,
+      "contextDrops": 0,
+      "humanGuidance": 0,
+      "codeReads": 0,
+      "skillsRead": [],
+      "toolErrorCount": 0,
+      "singleOriginalUserPrompt": true,
+      "stableSystem": true
+    }
+  },
+  "acceptance": {
+    "cloud": 3,
+    "local": 0,
+    "taskCount": 3
+  },
+  "scope": "Local outcomes; no new model runs during publication. Source snapshots frozen, not repaired.",
+  "privacy": "Raw system prompts, personal instructions, original Git history, databases and caches excluded. Machine paths replaced in docs/logs; core source byte-preserved.",
+  "limitations": [
+    "Different clients: bounded Ollama runner versus Codex, not pure model speed.",
+    "95k-character pruning reduces cache reuse; remaining-time tool absent.",
+    "Day2 common prompts reconstructed. Current dependencies, not historical restore.",
+    "One model/configuration; hardware cause not isolated; OOM not recorded."
+  ]
+}

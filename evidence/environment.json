@@ -1,0 +1,38 @@
+{
+  "hardware": {
+    "model": "MacBook Air",
+    "chip": "Apple M4",
+    "cpuCores": 10,
+    "gpuCores": 10,
+    "unifiedMemoryGB": 24,
+    "macOS": "26.6.2"
+  },
+  "software": {
+    "ollama": "0.40.11",
+    "vscode": "1.143.1",
+    "continue": "2.0.0"
+  },
+  "models": [
+    {
+      "name": "qwen3.5:9b-q4_K_M",
+      "id": "56671c2ab938",
+      "roles": [
+        "chat",
+        "agent"
+      ],
+      "contexts": [
+        16384,
+        32768
+      ]
+    },
+    {
+      "name": "qwen2.5-coder:1.5b-base",
+      "id": "02e0f2817a89",
+      "roles": [
+        "autocomplete"
+      ],
+      "context": 4096,
+      "maxPromptTokens": 2048
+    }
+  ]
+}

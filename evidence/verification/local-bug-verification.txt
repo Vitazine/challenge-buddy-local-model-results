@@ -1,0 +1,44 @@
+Независимая verification замороженного local-bug
+UTC: 2026-10-25T07:28:20.190765+00:00
+Вердикт: CHANGES_REQUIRED.
+Корень: <BENCHMARK_ROOT>. Исследована только local-bug. Продукт/тесты/конфиги/AGENTS не изменялись. Cloud, основной репозиторий и активный local-research не читались. Субагенты не запускались.
+Контекст: генератор timeout1830.78sec, nominal1800, 29steps, 1contextDrop (сведения оркестратора). Исторический PASS20/20 относился к версии ДО добавления tests/api-startdate-validation.test.ts; финальную версию модель не проверила. Ни исходный успех, ни автономность не переоцениваются задним числом по независимому API PASS.
+Прочитаны local-bug/AGENTS.md, TASK.txt, docs/agent-project-rules.md, Bug Fix v1, resources/review-profile.md и frozen browser skill. Review без правок. Применены ранее прочитанные экспериментальные api-and-interface-design, security-and-hardening и frontend-ui-engineering: контракт ошибки, серверная граница, сохранение прошлой политики формы.
+Base HEAD: d5b928c698b721c69e736cd90394ee640d8fbe6e.
+Manifest digest до и после verification: f2a27690a80f5fe2710b1b028570ecf2721a223349ab41c3f5e4eb7e4e208538
+Финальный manifest и полный diff: local-bug/test-results/current/candidates/07/hashes.json, diff.patch (wrapper).
+Изменения: README.md, docs/architecture.md, server/challenges.ts, src/components/CreateChallenge.tsx, tests/domain.test.ts; новые tests/api-startdate-validation.test.ts и tests/day04-defect-reproduction.test.ts. git diff просмотрен от HEAD целиком; оба untracked теста прочитаны отдельно.
+
+Команды и наблюдения:
+1. /usr/bin/python3 -I ROOT/resources/check.py ROOT/local-bug check
+   Артефакты: local-bug/test-results/current/checks/08-check.json и одноимённые stdout/stderr.
+   UTC 2026-10-25T07:27:05.883166+00:00, elapsed 2.408379084, exit 2.
+   FAIL typecheck: tests/api-startdate-validation.test.ts:25 TS2339 Property statusCode does not exist on type Error.
+   lint/test/build не достигнуты вследствие &&. Это ошибка конечного кода теста, не ограничение среды. IPC/sandbox отказа не было, escalation не требовался.
+2. Из local-bug ./scripts/pnpm.sh exec node --import tsx ROOT/test-results/current/verification/verifier.mjs ROOT/local-bug bug
+   Общий verifier revision2, exit0. PASS94 assertions /66 API calls. UTC/elapsed, stdout/stderr сохранены в local-bug-api-v2-01.{json,stdout.log,stderr.log}. Предыдущие попытки не перезаписаны.
+   Проверены шесть календарных сценариев: Manila; Los_Angeles с отличающимся локальным днём; Manila после полуночи; New_York у начала и конца DST; Kiritimati с переходом года. Во всех: +8 отклоняется422 с общим ApiError(code:string,message:string), список пуст после отказа; +7 принимается и читается GET без изменения; duration1/30 разрешены,0/31/1.5 отклонены; прошлая дата2020-01-01 разрешена; total содержит только принятые записи.
+   Прямой Origin контроль: разрешённый loopback5173 с explicit header →200; evil.example и127.0.0.1:16370 →401; без header →401.
+   Использовались синтетические подписанные пользователи, token-заглушка и отдельные memory DB. Серверные часы передавались dependency.
+3. Статически прослежены форма → API → сервис → INSERT; правило server/challenges.ts:47-55 исполняется до repository.create:58, сравнивает корректные YYYY-MM-DD с addDays(todayInZone(timeZone,clock),7).
+4. Пересчитан digest после проверок, совпадение с wrapper: продукт стабилен.
+
+Блокирующие замечания:
+[P1] tests/api-startdate-validation.test.ts:25. Приведение err as Error лишает тип поля statusCode; обязательный tsc/check падает. Новая версия после исторического PASS не готова к сборке. Доказательство: свежий wrapper check exit2.
+[P1] src/components/CreateChallenge.tsx:120,125-126. Добавлен min={todayInZone(timeZone)} и подсказка «от сегодня». В исходном HEAD поле date не имело min. HTML validation теперь запрещает пользователю выбрать/отправить прошлую дату через форму, хотя задача явно запрещает менять существующую политику прошлых дат. Сервер/API эту политику сохранил (доказано verifier), UI нарушил (статически подтверждено; runtime браузера BLOCKED).
+[P2] tests/api-startdate-validation.test.ts:7-39. Тест с именем «via direct POST» вызывает только ChallengeService, не API, и не проверяет отсутствие записи при отказе. Собственные новые проверки не доказывают заявленную HTTP/noINSERT приёмку; независимый общий verifier проверил эти сценарии успешно. Это ограничение покрытия генерации, не обнаруженный дефект серверного правила.
+Ограничение клиента: maxStartDate вычисляется из реальных browser clock, а не серверных часов. При заданном smoke serverfixed2026-10-24T10Z и browser2026-10-25 ограничители различаются; runtime границы формы не исследованы, поскольку нет свежей сборки. Самостоятельным доказанным дефектом синхронизации это не объявляется.
+
+Матрица приёмки:
+- Сервер +7 включительно: PASS API v2.
+- Сервер +8/422/ApiError и noINSERT: PASS API v2.
+- Календарные дни в timeZone и DST/смена года: PASS API v2.
+- Существующая политика прошлых дат: API PASS; UI FAIL статически из-за нового min.
+- Duration1–30 без изменений: PASS API v2.
+- Документация поведения: README/architecture обновлены; README разрешает прошлые даты, что расходится с новым min формы.
+- Регрессионные тесты добавлены: да; полный итог FAIL из-за нового TS дефекта; название API теста не соответствует уровню проверки.
+- Полный check конечного кандидата: FAIL. Исторический PASS20/20 не переносится на новый digest.
+- Browser smoke +8form, +7create/reload, active10-24create/reload, mark14%/reload/undo/archive/back: BLOCKED. Свежий check/build не прошёл; старый dist не обслуживался. Консоль, HTTP журнал браузера, DOM/скриншоты отсутствуют, успешная UI проверка не заявлена.
+- Гонки/устаревшие ответы: не тестировались, не объявляются PASS.
+
+Серверы и вкладки verification не создавались; порты16373 и5173 не занимались. Chrome CUA доступен, DevTools MCP отсутствует; применимый smoke не запускался по условию отказа сборки. Доработки профилей: отсутствуют. Замороженный результат не исправлялся.

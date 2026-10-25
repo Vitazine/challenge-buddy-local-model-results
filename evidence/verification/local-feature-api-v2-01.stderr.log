@@ -1,0 +1,17 @@
+AssertionError [ERR_ASSERTION]: timestamp
++ actual - expected
+
++ null
+- '2026-10-24T10:00:00.000Z'
+
+    at eq (<BENCHMARK_ROOT>/test-results/current/verification/verifier.mjs:15:43)
+    at feature (<BENCHMARK_ROOT>/test-results/current/verification/verifier.mjs:21:86)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async <anonymous> (<BENCHMARK_ROOT>/test-results/current/verification/verifier.mjs:37:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: null,
+  expected: '2026-10-24T10:00:00.000Z',
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}

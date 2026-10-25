@@ -1,0 +1,4 @@
+src/components/CreateChallenge.tsx(29,24): error TS2304: Cannot find name 'addDays'.
+tests/day04-defect-reproduction.test.ts(3,33): error TS2459: Module '"../server/challenges"' declares 'ChallengeRecord' locally, but it is not exported.
+[ELIFECYCLE] Command failed with exit code 2.
+[ELIFECYCLE] Command failed with exit code 2.

@@ -1,0 +1,40 @@
+✔ дефект: сервер принимает startDate за пределами +7 дней (27.750083ms)
+✔ calendar arithmetic and time zones cross boundaries without DST drift (10.482083ms)
+✔ input rejects impossible dates, blank titles, fractional durations and unknown fields (1.64825ms)
+✔ last day is inclusive, marks are idempotent, owner is enforced, data survives reopening (3.41125ms)
+✔ future challenge cannot be checked in (0.259958ms)
+✔ startDate validation: today + 7 is allowed (inclusive boundary) (0.205167ms)
+✖ startDate validation: today + 8 is rejected (outside boundary) (1.074666ms)
+✔ startDate validation: different time zones use their own local date (0.220417ms)
+✔ startDate validation: past dates still allowed (existing policy unchanged) (0.176375ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 8
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 173.452
+
+✖ failing tests:
+
+test at test-results/current/verification/baseline-repro-diagnostic/tests/domain.test.ts:1:3170
+✖ startDate validation: today + 8 is rejected (outside boundary) (1.074666ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /startDate|дата старта/i. Input:
+  
+  'Дата сегодня + 8 дней должна быть отклонена'
+  
+      at TestContext.<anonymous> (<BENCHMARK_ROOT>/local-bug/test-results/current/verification/baseline-repro-diagnostic/tests/domain.test.ts:115:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Дата сегодня + 8 дней должна быть отклонена',
+    expected: /startDate|дата старта/i,
+    operator: 'match',
+    diff: 'simple'
+  }

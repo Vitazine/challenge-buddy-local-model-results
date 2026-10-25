@@ -1,0 +1,27 @@
+✔ API: create → mark → reload → undo; other users cannot read or change data (76.242875ms)
+✔ API rejects missing credentials, bad data and oversized payloads (5.792917ms)
+✔ development identity fails closed in production and for cross-origin requests (2.115375ms)
+✔ accepts signed Telegram identity (1.631042ms)
+✔ rejects tampering, bad token, malformed hash and duplicate fields (0.869667ms)
+✔ rejects expired, future and invalid identity (0.52625ms)
+✔ calendar arithmetic and time zones cross boundaries without DST drift (11.285125ms)
+✔ input rejects impossible dates, blank titles, fractional durations and unknown fields (2.391291ms)
+✔ last day is inclusive, marks are idempotent, owner is enforced, data survives reopening (3.681792ms)
+✔ future challenge cannot be checked in (0.309083ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 653.650667
+vite v7.3.7 building client environment for production...
+transforming...
+✓ 134 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.86 kB │ gzip:   0.51 kB
+dist/assets/index-BCy353Jr.css   11.01 kB │ gzip:   3.08 kB
+dist/assets/index-x_bQMYxm.js   324.29 kB │ gzip: 100.19 kB
+✓ built in 527ms

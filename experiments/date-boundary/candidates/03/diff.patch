@@ -1,0 +1,166 @@
+diff --git a/README.md b/README.md
+index c673c5f..078fc9f 100644
+--- a/README.md
++++ b/README.md
+@@ -76,7 +76,7 @@ dist/                Сборка интерфейса; исключена из
+ ## Бизнес-правила
+ 
+ - Название: 1–80 символов после обрезки пробелов; длительность: целое число 1–30.
+-- Начальная и конечная даты включаются в срок. Допускается выбрать прошлую или будущую дату старта.
++- Начальная и конечная даты включаются в срок. Дата старта должна быть не позже сегодня + 7 дней включительно (в часовом поясе челленджа). Допускается выбрать прошлую или будущую дату старта в пределах этого диапазона.
+ - Часовой пояс берется из устройства при создании и сохраняется в челлендже.
+ - Только сервер определяет текущую дату. Отметить и отменить можно только сегодня и только внутри срока.
+ - Повторный PUT не дублирует отметку. Повторный DELETE не меняет результат.
+diff --git a/docs/architecture.md b/docs/architecture.md
+index 5569417..791ba08 100644
+--- a/docs/architecture.md
++++ b/docs/architecture.md
+@@ -23,7 +23,7 @@
+ | PUT | /api/challenges/:id/check-ins/today | 200, состояние после отметки; идемпотентно |
+ | DELETE | /api/challenges/:id/check-ins/today | 200, состояние после отмены; идемпотентно в пределах дня |
+ 
+-POST принимает `title`, `startDate` в YYYY-MM-DD, `duration`, `timeZone`. Владелец из тела запроса не принимается. Контракты определены в `shared/contracts.ts`.
++POST принимает `title`, `startDate` в YYYY-MM-DD (не позже сегодня + 7 дней включительно в часовом поясе челленджа), `duration`, `timeZone`. Владелец из тела запроса не принимается. Контракты определены в `shared/contracts.ts`.
+ 
+ Ошибки единообразны: `{ "error": { "code": "...", "message": "..." } }`. Статусы: 401 — нет входа; 404 — нет доступного объекта; 409 — действие вне срока; 422 — некорректные поля; 429 — ограничение частоты; 500 — внутренняя ошибка без деталей.
+ 
+diff --git a/server/challenges.ts b/server/challenges.ts
+index 14f06cc..d487adb 100644
+--- a/server/challenges.ts
++++ b/server/challenges.ts
+@@ -43,6 +43,18 @@ export class ChallengeService {
+     };
+   }
+   create(ownerId: string, input: CreateChallengeInput): Challenge {
++    // Проверка: startDate должен быть не позже сегодня + 7 дней включительно в часовом поясе челленджа
++    const today = todayInZone(input.timeZone, this.clock());
++    const maxStartDate = addDays(today, 7);
++    
++    if (input.startDate > maxStartDate) {
++      throw new AppError(
++        422,
++        "INVALID_START_DATE",
++        `Дата старта (${input.startDate}) должна быть не позже ${maxStartDate}.`,
++      );
++    }
++    
+     return this.present(this.repository.create(ownerId, input, this.clock()));
+   }
+   get(ownerId: string, id: string): Challenge {
+diff --git a/src/components/CreateChallenge.tsx b/src/components/CreateChallenge.tsx
+index 31f9928..fdf01b0 100644
+--- a/src/components/CreateChallenge.tsx
++++ b/src/components/CreateChallenge.tsx
+@@ -24,8 +24,19 @@ export function CreateChallenge({
+   );
+   const [startDate, setStartDate] = useState(() => todayInZone(timeZone));
+   const [error, setError] = useState("");
++  
++  // Вычисляем максимальную дату старта (сегодня + 7 дней) в часовом поясе пользователя
++  const maxStartDate = addDays(todayInZone(timeZone), 7);
++  
+   async function submit(event: FormEvent<HTMLFormElement>) {
+     event.preventDefault();
++    
++    // Клиентская проверка даты старта перед отправкой
++    if (startDate > maxStartDate) {
++      setError(`Дата старта (${startDate}) должна быть не позже ${maxStartDate}.`);
++      return;
++    }
++    
+     const parsed = createChallengeSchema.safeParse({
+       title,
+       duration,
+@@ -106,9 +117,14 @@ export function CreateChallenge({
+                 id="startDate"
+                 type="date"
+                 required
++                min={todayInZone(timeZone)}
++                max={maxStartDate}
+                 value={startDate}
+                 onChange={(event) => setStartDate(event.target.value)}
+               />
++              <p className="hint-small">
++                Можно выбрать дату от {todayInZone(timeZone)} до {maxStartDate}.
++              </p>
+             </div>
+           </div>
+           <p className="hint">
+diff --git a/tests/domain.test.ts b/tests/domain.test.ts
+index e6fe53b..4e15714 100644
+--- a/tests/domain.test.ts
++++ b/tests/domain.test.ts
+@@ -80,3 +80,73 @@ test("future challenge cannot be checked in", () => {
+   assert.throws(() => service.checkIn("42", challenge.id, true), /вне срока/);
+   repository.close();
+ });
++
++test("startDate validation: today + 7 is allowed (inclusive boundary)", () => {
++  const repository = new ChallengeRepository(":memory:");
++  const service = new ChallengeService(repository, () => now);
++  
++  // Сегодня + 7 дней — должно быть допустимо
++  const maxDateAllowed = addDays(todayInZone("UTC"), 7);
++  const challenge = service.create("42", {
++    ...challengeInput,
++    startDate: maxDateAllowed,
++  });
++  assert.equal(challenge.startDate, maxDateAllowed);
++  repository.close();
++});
++
++test("startDate validation: today + 8 is rejected (outside boundary)", () => {
++  const repository = new ChallengeRepository(":memory:");
++  const service = new ChallengeService(repository, () => now);
++  
++  // Сегодня + 8 дней — должно быть отклонено
++  const maxDateRejected = addDays(todayInZone("UTC"), 8);
++  
++  try {
++    service.create("42", {
++      ...challengeInput,
++      startDate: maxDateRejected,
++    });
++    assert.fail("Дата сегодня + 8 дней должна быть отклонена");
++  } catch (err) {
++    assert.match((err as Error).message, /startDate|дата старта/i);
++  }
++  repository.close();
++});
++
++test("startDate validation: different time zones use their own local date", () => {
++  const repository = new ChallengeRepository(":memory:");
++  
++  // Создаем сервис с фиксированной датой для Asia/Tokyo
++  const serviceTokyo = new ChallengeService(
++    repository,
++    () => new Date("2026-10-25T08:00:00Z") // В UTC это 2026-10-25 08:00
++  );
++  
++  // В Tokyo это уже 2026-10-25 21:00 (тот же календарный день)
++  const tokyoToday = todayInZone("Asia/Tokyo", new Date("2026-10-25T08:00:00Z"));
++  const maxDateTokyo = addDays(tokyoToday, 7);
++  
++  const challenge = serviceTokyo.create("42", {
++    ...challengeInput,
++    startDate: maxDateTokyo,
++    timeZone: "Asia/Tokyo",
++  });
++  assert.equal(challenge.startDate, maxDateTokyo);
++  
++  repository.close();
++});
++
++test("startDate validation: past dates still allowed (existing policy unchanged)", () => {
++  const repository = new ChallengeRepository(":memory:");
++  const service = new ChallengeService(repository, () => now);
++  
++  // Прошлые даты должны оставаться допустимыми (существующая политика)
++  const pastDate = addDays(todayInZone("UTC"), -1);
++  const challenge = service.create("42", {
++    ...challengeInput,
++    startDate: pastDate,
++  });
++  assert.equal(challenge.startDate, pastDate);
++  repository.close();
++});

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "./scripts/pnpm.sh",
+    "check"
+  ],
+  "cwd": "<BENCHMARK_ROOT>/local-feature",
+  "phase": "check",
+  "startedUTC": "2026-10-25T05:59:52.186840+00:00",
+  "elapsedSeconds": 8.16647725,
+  "exitCode": 0,
+  "candidate": null,
+  "sourceDigest": "7e3639577f457192033696c9744898c5164f34bb89255039ce20ff2a429a31d4",
+  "productChanged": false
+}
